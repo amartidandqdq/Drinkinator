@@ -21,7 +21,7 @@ export function renderDrinkList(listEl, clearBtn, drinks, bacFn, params, onRemov
   if (!drinks.length) {
     listEl.innerHTML =
       '<p style="text-align:center;color:var(--muted);font-size:0.85rem;padding:12px 0;">' +
-      'No drinks added yet. Tap a preset above!</p>';
+      'Aucune consommation. Appuyez sur un preset ci-dessus !</p>';
     return;
   }
 

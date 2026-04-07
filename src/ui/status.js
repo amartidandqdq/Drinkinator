@@ -6,7 +6,8 @@
  * @typedef {Object} StatusElements
  * @property {HTMLElement} panel - Status card container
  * @property {HTMLElement} label - Status text (OK / NO GO)
- * @property {HTMLElement} bacValue - BAC number display
+ * @property {HTMLElement} bacBlood - Blood alcohol display (g/L)
+ * @property {HTMLElement} bacBreath - Breath alcohol display (mg/L)
  * @property {HTMLElement} driveTimeRow - "Drive again at" row
  * @property {HTMLElement} driveTime - Drive time value
  * @property {HTMLElement} soberTimeRow - "Fully sober at" row
@@ -34,7 +35,8 @@
 export function renderStatus(els, data) {
   const { bac, limit, drinkCount, driveTimeStr, soberTimeStr } = data;
 
-  els.bacValue.textContent = bac.toFixed(2) + ' g/L';
+  els.bacBlood.textContent = bac.toFixed(2) + ' g/L';
+  els.bacBreath.textContent = (bac * 0.5).toFixed(2) + ' mg/L';
   els.panel.classList.remove('ok', 'warn', 'danger');
 
   if (bac <= 0.001 && drinkCount === 0) {
@@ -43,14 +45,14 @@ export function renderStatus(els, data) {
   } else if (bac <= limit) {
     if (bac > 0.001) {
       els.panel.classList.add('warn');
-      els.label.textContent = 'OK (not sober)';
+      els.label.textContent = 'OK (pas sobre)';
     } else {
       els.panel.classList.add('ok');
       els.label.textContent = 'OK';
     }
   } else {
     els.panel.classList.add('danger');
-    els.label.textContent = 'NO GO';
+    els.label.textContent = 'INTERDIT';
   }
 
   // Drive time
@@ -76,5 +78,7 @@ export function renderStatus(els, data) {
     els.timelineFill.style.width = pct + '%';
     els.timelineFill.style.background = 'linear-gradient(90deg, var(--ok), var(--warn))';
   }
-  els.timelineLabel.textContent = `${bac.toFixed(2)} / ${limit.toFixed(2)} g/L`;
+  const breath = bac * 0.5;
+  const breathLimit = limit * 0.5;
+  els.timelineLabel.textContent = `${bac.toFixed(2)}/${limit.toFixed(2)} g/L \u2022 ${breath.toFixed(2)}/${breathLimit.toFixed(2)} mg/L`;
 }

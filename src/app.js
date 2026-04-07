@@ -21,7 +21,8 @@ const profileDOM = {
 const statusEls = {
   panel: $('status-panel'),
   label: $('status-label'),
-  bacValue: $('bac-value'),
+  bacBlood: $('bac-blood'),
+  bacBreath: $('bac-breath'),
   driveTimeRow: $('drive-time-row'),
   driveTime: $('drive-time'),
   soberTimeRow: $('sober-time-row'),
@@ -50,10 +51,10 @@ function update() {
   if (bac > 0.001) {
     if (bac > params.limit) {
       const mins = findTimeTo(params.limit, drinks, now, params, computeBAC);
-      driveTimeStr = `${fmtTime(mins, now)} (in ${fmtDuration(mins)})`;
+      driveTimeStr = `${fmtDuration(mins)} (${fmtTime(mins, now)})`;
     }
     const soberMins = findTimeTo(0.001, drinks, now, params, computeBAC);
-    soberTimeStr = `${fmtTime(soberMins, now)} (in ${fmtDuration(soberMins)})`;
+    soberTimeStr = `${fmtDuration(soberMins)} (${fmtTime(soberMins, now)})`;
   }
 
   renderStatus(statusEls, { bac, limit: params.limit, drinkCount: drinks.length, driveTimeStr, soberTimeStr });

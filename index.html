@@ -1,120 +1,121 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Drinkinator - BAC Calculator</title>
+<title>Drinkinator - Calculateur d'alcool</title>
 <link rel="stylesheet" href="styles/main.css">
 </head>
 <body>
 
 <h1>Drinkinator</h1>
-<p class="subtitle">Blood Alcohol Content Estimator</p>
+<p class="subtitle">Estimateur de taux d'alcool</p>
 
 <!-- STATUS -->
 <div class="card" id="status-panel">
   <div id="status-label">OK</div>
-  <div class="stat">Estimated BAC: <strong id="bac-value">0.00 g/L</strong></div>
-  <div class="stat" id="drive-time-row" style="display:none">Drive again at: <strong id="drive-time"></strong></div>
-  <div class="stat" id="sober-time-row" style="display:none">Fully sober at: <strong id="sober-time"></strong></div>
+  <div class="stat">Sang : <strong id="bac-blood">0,00 g/L</strong></div>
+  <div class="stat">Air expir&eacute; : <strong id="bac-breath">0,00 mg/L</strong></div>
+  <div class="stat" id="drive-time-row" style="display:none">Sous la limite dans : <strong id="drive-time"></strong></div>
+  <div class="stat" id="sober-time-row" style="display:none">Sobre dans : <strong id="sober-time"></strong></div>
   <div class="timeline" id="timeline" style="display:none">
     <div class="timeline-fill" id="timeline-fill"></div>
     <span class="timeline-label" id="timeline-label"></span>
   </div>
 </div>
 
-<!-- PROFILE -->
+<!-- PROFIL -->
 <div class="card">
-  <h2>Profile</h2>
+  <h2>Profil</h2>
   <div class="row">
     <div class="field">
-      <label>Weight (kg)</label>
+      <label>Poids (kg)</label>
       <input type="number" id="weight" value="80" min="30" max="250" step="1">
     </div>
     <div class="field">
-      <label>Sex</label>
+      <label>Sexe</label>
       <div class="radio-group">
-        <label><input type="radio" name="sex" value="male" checked> Male</label>
-        <label><input type="radio" name="sex" value="female"> Female</label>
+        <label><input type="radio" name="sex" value="male" checked> Homme</label>
+        <label><input type="radio" name="sex" value="female"> Femme</label>
       </div>
     </div>
   </div>
   <div>
-    <label>Alcohol tolerance: <span id="tolerance-label">Medium</span></label>
+    <label>Tol&eacute;rance : <span id="tolerance-label">Moyenne</span></label>
     <input type="range" id="tolerance" min="0" max="1" step="0.05" value="0.5">
   </div>
 </div>
 
-<!-- LEGAL -->
+<!-- LIMITE LEGALE -->
 <div class="card">
-  <h2>Legal Limit</h2>
+  <h2>Limite l&eacute;gale</h2>
   <div class="row">
     <div class="field">
-      <label>Country</label>
+      <label>Pays</label>
       <select id="country"></select>
     </div>
   </div>
   <div class="row" id="custom-limit-row" style="display:none">
     <div class="field">
-      <label>Custom limit (g/L)</label>
+      <label>Limite personnalis&eacute;e (g/L)</label>
       <input type="number" id="custom-limit" value="0.5" min="0" max="2" step="0.01">
     </div>
   </div>
 </div>
 
-<!-- DRINKS -->
+<!-- CONSOMMATIONS -->
 <div class="card">
-  <h2>Drinks</h2>
+  <h2>Consommations</h2>
   <div class="drink-presets" id="presets"></div>
 
   <details style="margin-bottom: 12px;">
-    <summary style="cursor:pointer; color: var(--accent); font-size:0.88rem;">+ Custom drink</summary>
+    <summary style="cursor:pointer; color: var(--accent); font-size:0.88rem;">+ Boisson personnalis&eacute;e</summary>
     <div class="custom-drink" style="margin-top:8px;">
       <div class="field">
         <label>Volume (mL)</label>
         <input type="number" id="custom-vol" value="250" min="10" max="2000">
       </div>
       <div class="field">
-        <label>ABV (%)</label>
+        <label>Degr&eacute; (%)</label>
         <input type="number" id="custom-abv" value="5" min="0.1" max="80" step="0.1">
       </div>
-      <button class="btn btn-sm" id="custom-add-btn">Add</button>
+      <button class="btn btn-sm" id="custom-add-btn">Ajouter</button>
     </div>
   </details>
 
   <div class="drink-list" id="drink-list"></div>
   <div style="text-align:center; margin-top:8px;">
-    <button class="btn btn-sm btn-outline" id="clear-btn" style="display:none">Clear all</button>
+    <button class="btn btn-sm btn-outline" id="clear-btn" style="display:none">Tout effacer</button>
   </div>
 </div>
 
-<!-- TIME PICKER MODAL -->
+<!-- MODAL CHOIX HORAIRE -->
 <div class="modal-overlay" id="time-modal">
   <div class="modal">
     <button class="close-modal">&times;</button>
-    <h3 id="modal-drink-name">Add drink</h3>
+    <h3 id="modal-drink-name">Ajouter</h3>
     <p id="modal-drink-info" style="text-align:center;color:var(--muted);font-size:0.85rem;margin:-8px 0 12px;"></p>
     <div class="time-mode-tabs">
-      <button class="time-mode-tab active">Now</button>
-      <button class="time-mode-tab">Specific time</button>
-      <button class="time-mode-tab">Time ago</button>
+      <button class="time-mode-tab active">Maintenant</button>
+      <button class="time-mode-tab">Heure pr&eacute;cise</button>
+      <button class="time-mode-tab">Il y a...</button>
     </div>
 
     <div class="time-mode-content active" id="mode-now">
       <div class="modal-confirm-row">
-        <button class="btn">Add now</button>
+        <button class="btn">Ajouter maintenant</button>
       </div>
     </div>
 
     <div class="time-mode-content" id="mode-clock">
       <div class="row">
         <div class="field">
-          <label>Time</label>
+          <label>Heure</label>
           <input type="time" id="modal-time">
         </div>
       </div>
       <div class="modal-confirm-row">
-        <button class="btn">Add</button>
+        <button class="btn">Ajouter</button>
       </div>
     </div>
 
@@ -132,26 +133,26 @@
       </div>
       <div class="ago-custom-row">
         <div class="field">
-          <label>Custom</label>
+          <label>Personnalis&eacute;</label>
           <input type="number" id="ago-value" value="20" min="1" max="1440">
         </div>
         <div class="field">
           <label>&nbsp;</label>
           <select id="ago-unit">
             <option value="min">minutes</option>
-            <option value="h">hours</option>
+            <option value="h">heures</option>
           </select>
         </div>
-        <button class="btn btn-sm">Add</button>
+        <button class="btn btn-sm">Ajouter</button>
       </div>
     </div>
   </div>
 </div>
 
 <p class="disclaimer">
-  This tool provides rough estimates only. Actual BAC depends on many factors
-  (food, hydration, metabolism, medication, etc.). Never rely solely on this calculator
-  to decide whether to drive. When in doubt, don't drive.
+  Cet outil fournit des estimations approximatives. Le taux r&eacute;el d&eacute;pend de nombreux
+  facteurs (repas, hydratation, m&eacute;tabolisme, m&eacute;dicaments, etc.). Ne vous fiez jamais
+  uniquement &agrave; ce calculateur pour d&eacute;cider de conduire. En cas de doute, ne conduisez pas.
 </p>
 
 <script type="module" src="src/app.js"></script>

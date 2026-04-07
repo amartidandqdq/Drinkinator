@@ -29,14 +29,11 @@ export function createTimeModal(overlay, onConfirm) {
   let pending = null;
 
   /** @param {'now'|'clock'|'ago'} mode */
+  const MODE_KEYS = ['now', 'clock', 'ago'];
+
   function setMode(mode) {
-    tabs.forEach(t => {
-      const text = t.textContent.toLowerCase();
-      t.classList.toggle('active',
-        (mode === 'now' && text.includes('now')) ||
-        (mode === 'clock' && text.includes('specific')) ||
-        (mode === 'ago' && text.includes('ago'))
-      );
+    tabs.forEach((t, i) => {
+      t.classList.toggle('active', MODE_KEYS[i] === mode);
     });
     Object.entries(modeContents).forEach(([k, el]) => {
       el.classList.toggle('active', k === mode);
@@ -87,13 +84,8 @@ export function createTimeModal(overlay, onConfirm) {
   });
 
   // Tab switching
-  tabs.forEach(t => {
-    t.addEventListener('click', () => {
-      const text = t.textContent.toLowerCase();
-      if (text.includes('now')) setMode('now');
-      else if (text.includes('specific')) setMode('clock');
-      else setMode('ago');
-    });
+  tabs.forEach((t, i) => {
+    t.addEventListener('click', () => setMode(MODE_KEYS[i]));
   });
 
   return {

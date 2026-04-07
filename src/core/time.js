@@ -46,5 +46,5 @@ export function fmtDuration(mins) {
   const h = Math.floor(mins / 60);
   const m = Math.round(mins % 60);
   if (h === 0) return `${m} min`;
-  return `${h}h ${m}min`;
+  return `${h} h ${String(m).padStart(2, '0')}`;
 }

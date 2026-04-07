@@ -46,6 +46,6 @@ export function readProfile(dom, countries) {
  * @returns {string}
  */
 export function toleranceLabel(value) {
-  const labels = ['Very low', 'Low', 'Medium', 'High', 'Very high'];
+  const labels = ['Très faible', 'Faible', 'Moyenne', 'Élevée', 'Très élevée'];
   return labels[Math.min(4, Math.floor(value * 4.99))];
 }
