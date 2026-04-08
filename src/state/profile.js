@@ -5,6 +5,8 @@
 /** @typedef {import('../types.js').BACParams} BACParams */
 /** @typedef {import('../types.js').Country} Country */
 
+import { sexFactor, elimRate } from '../core/params.js';
+
 /**
  * @typedef {Object} ProfileDOM
  * @property {HTMLInputElement} weight - Weight input
@@ -26,18 +28,12 @@ export function readProfile(dom, countries) {
   const tolerance = parseFloat(dom.tolerance.value);
   const country = countries[dom.country.value];
 
-  const sexFactor = sex === 'male' ? 0.7 : 0.6;
-
-  /** Elimination rate: interpolate between min/max by tolerance slider */
-  const [elimMin, elimMax] = sex === 'male' ? [0.10, 0.15] : [0.085, 0.10];
-  const elimRate = elimMin + tolerance * (elimMax - elimMin);
-
   let limit = country.limit;
   if (country.code === 'OTHER') {
     limit = parseFloat(dom.customLimit.value) || 0.5;
   }
 
-  return { weight, sexFactor, elimRate, limit };
+  return { weight, sexFactor: sexFactor(sex), elimRate: elimRate(sex, tolerance), limit };
 }
 
 /**
