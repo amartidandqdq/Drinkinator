@@ -2,6 +2,8 @@
  * @file Time-picker modal — lets user choose "now", a specific time, or "X ago".
  */
 
+import { MS_PER_MINUTE } from '../constants.js';
+
 /**
  * @typedef {Object} TimeModal
  * @property {(name: string, vol: number, abv: number) => void} open - Show modal for a drink
@@ -69,7 +71,7 @@ export function createTimeModal(overlay, onConfirm) {
   overlay.querySelectorAll('.ago-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       const mins = parseInt(btn.dataset.mins, 10);
-      confirm(new Date(Date.now() - mins * 60_000));
+      confirm(new Date(Date.now() - mins * MS_PER_MINUTE));
     });
   });
 
@@ -80,7 +82,7 @@ export function createTimeModal(overlay, onConfirm) {
     let v = parseFloat(agoVal.value);
     if (!v || v <= 0) return;
     if (agoUnit.value === 'h') v *= 60;
-    confirm(new Date(Date.now() - v * 60_000));
+    confirm(new Date(Date.now() - v * MS_PER_MINUTE));
   });
 
   // Tab switching

@@ -6,6 +6,7 @@
 /** @typedef {import('../types.js').Country} Country */
 
 import { sexFactor, elimRate } from '../core/params.js';
+import { DEFAULT_WEIGHT_KG, DEFAULT_CUSTOM_LIMIT } from '../constants.js';
 
 /**
  * @typedef {Object} ProfileDOM
@@ -23,14 +24,14 @@ import { sexFactor, elimRate } from '../core/params.js';
  * @returns {BACParams}
  */
 export function readProfile(dom, countries) {
-  const weight = parseFloat(dom.weight.value) || 80;
+  const weight = parseFloat(dom.weight.value) || DEFAULT_WEIGHT_KG;
   const sex = dom.getSex();
   const tolerance = parseFloat(dom.tolerance.value);
   const country = countries[dom.country.value];
 
   let limit = country.limit;
   if (country.code === 'OTHER') {
-    limit = parseFloat(dom.customLimit.value) || 0.5;
+    limit = parseFloat(dom.customLimit.value) || DEFAULT_CUSTOM_LIMIT;
   }
 
   return { weight, sexFactor: sexFactor(sex), elimRate: elimRate(sex, tolerance), limit };

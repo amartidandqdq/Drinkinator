@@ -2,6 +2,8 @@
  * @file Renders the status panel (OK / warn / NO GO), timeline bar, and time estimates.
  */
 
+import { BAC_TRACE_THRESHOLD, BLOOD_TO_BREATH_RATIO, TIMELINE_DANGER_SCALE, TIMELINE_MIN_LIMIT } from '../constants.js';
+
 /**
  * @typedef {Object} StatusElements
  * @property {HTMLElement} panel - Status card container
@@ -36,14 +38,14 @@ export function renderStatus(els, data) {
   const { bac, limit, drinkCount, driveTimeStr, soberTimeStr } = data;
 
   els.bacBlood.textContent = bac.toFixed(2) + ' g/L';
-  els.bacBreath.textContent = (bac * 0.5).toFixed(2) + ' mg/L';
+  els.bacBreath.textContent = (bac * BLOOD_TO_BREATH_RATIO).toFixed(2) + ' mg/L';
   els.panel.classList.remove('ok', 'warn', 'danger');
 
-  if (bac <= 0.001 && drinkCount === 0) {
+  if (bac <= BAC_TRACE_THRESHOLD && drinkCount === 0) {
     els.panel.classList.add('ok');
     els.label.textContent = 'OK';
   } else if (bac <= limit) {
-    if (bac > 0.001) {
+    if (bac > BAC_TRACE_THRESHOLD) {
       els.panel.classList.add('warn');
       els.label.textContent = 'OK (pas sobre)';
     } else {
@@ -64,21 +66,21 @@ export function renderStatus(els, data) {
   if (soberTimeStr) els.soberTime.textContent = soberTimeStr;
 
   // Timeline bar
-  if (bac <= 0.001) {
+  if (bac <= BAC_TRACE_THRESHOLD) {
     els.timeline.style.display = 'none';
     return;
   }
   els.timeline.style.display = '';
   if (bac > limit) {
-    const pct = Math.min(100, (bac / (limit * 3)) * 100);
+    const pct = Math.min(100, (bac / (limit * TIMELINE_DANGER_SCALE)) * 100);
     els.timelineFill.style.width = pct + '%';
     els.timelineFill.style.background = 'linear-gradient(90deg, var(--danger), var(--warn))';
   } else {
-    const pct = Math.min(100, (bac / Math.max(0.01, limit)) * 100);
+    const pct = Math.min(100, (bac / Math.max(TIMELINE_MIN_LIMIT, limit)) * 100);
     els.timelineFill.style.width = pct + '%';
     els.timelineFill.style.background = 'linear-gradient(90deg, var(--ok), var(--warn))';
   }
-  const breath = bac * 0.5;
-  const breathLimit = limit * 0.5;
+  const breath = bac * BLOOD_TO_BREATH_RATIO;
+  const breathLimit = limit * BLOOD_TO_BREATH_RATIO;
   els.timelineLabel.textContent = `${bac.toFixed(2)}/${limit.toFixed(2)} g/L \u2022 ${breath.toFixed(2)}/${breathLimit.toFixed(2)} mg/L`;
 }

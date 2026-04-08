@@ -3,13 +3,19 @@
  *       No DOM access — testable in isolation.
  */
 
+import {
+  SEX_FACTOR_MALE, SEX_FACTOR_FEMALE,
+  ELIM_MIN_MALE, ELIM_MAX_MALE,
+  ELIM_MIN_FEMALE, ELIM_MAX_FEMALE,
+} from '../constants.js';
+
 /**
  * Compute the Widmark sex distribution factor.
  * @param {"male"|"female"} sex
- * @returns {number} 0.7 (male) or 0.6 (female)
+ * @returns {number}
  */
 export function sexFactor(sex) {
-  return sex === 'male' ? 0.7 : 0.6;
+  return sex === 'male' ? SEX_FACTOR_MALE : SEX_FACTOR_FEMALE;
 }
 
 /**
@@ -19,6 +25,8 @@ export function sexFactor(sex) {
  * @returns {number} Elimination rate in g/L/h
  */
 export function elimRate(sex, tolerance) {
-  const [min, max] = sex === 'male' ? [0.10, 0.15] : [0.085, 0.10];
+  const [min, max] = sex === 'male'
+    ? [ELIM_MIN_MALE, ELIM_MAX_MALE]
+    : [ELIM_MIN_FEMALE, ELIM_MAX_FEMALE];
   return min + tolerance * (max - min);
 }

@@ -1,6 +1,8 @@
 /**
- * @file Time formatting helpers — pure functions, no dependencies.
+ * @file Time formatting helpers — pure functions.
  */
+
+import { MS_PER_MINUTE } from '../constants.js';
 
 /**
  * Format a future time as HH:MM.
@@ -9,7 +11,7 @@
  * @returns {string} "HH:MM"
  */
 export function fmtTime(minutesFromNow, now) {
-  const t = new Date(now.getTime() + minutesFromNow * 60_000);
+  const t = new Date(now.getTime() + minutesFromNow * MS_PER_MINUTE);
   return `${String(t.getHours()).padStart(2, '0')}:${String(t.getMinutes()).padStart(2, '0')}`;
 }
 

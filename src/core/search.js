@@ -5,6 +5,8 @@
 /** @typedef {import('../types.js').Drink} Drink */
 /** @typedef {import('../types.js').BACParams} BACParams */
 
+import { MAX_SEARCH_HOURS, MS_PER_MINUTE, SEARCH_ITERATIONS } from '../constants.js';
+
 /**
  * Find minutes from `now` until BAC drops to `target` via binary search.
  * @param {number} target - Target BAC in g/L
@@ -16,10 +18,10 @@
  */
 export function findTimeTo(target, drinks, now, params, computeBAC) {
   let lo = 0;
-  let hi = 48 * 60;
-  for (let i = 0; i < 50; i++) {
+  let hi = MAX_SEARCH_HOURS * 60;
+  for (let i = 0; i < SEARCH_ITERATIONS; i++) {
     const mid = (lo + hi) / 2;
-    const futureBAC = computeBAC(drinks, new Date(now.getTime() + mid * 60_000), params);
+    const futureBAC = computeBAC(drinks, new Date(now.getTime() + mid * MS_PER_MINUTE), params);
     if (futureBAC > target) lo = mid;
     else hi = mid;
   }
