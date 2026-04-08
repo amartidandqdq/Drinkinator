@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Drinkinator — Test Runner</title>
+  <style>
+    body { font-family: monospace; background: #111; color: #ccc; padding: 20px; }
+    .pass { color: #00b894; } .fail { color: #e17055; font-weight: bold; }
+    h2 { color: #6c5ce7; margin-top: 24px; }
+    pre { margin: 4px 0 4px 16px; }
+  </style>
+</head>
+<body>
+  <h1>Drinkinator Test Runner</h1>
+  <div id="output"></div>
+  <script type="module">
+    const out = document.getElementById('output');
+    let passed = 0, failed = 0, total = 0;
+
+    window.__test = {
+      /** @param {string} name @param {() => void} fn */
+      run(name, fn) {
+        total++;
+        try {
+          fn();
+          passed++;
+          out.innerHTML += `<pre class="pass">  PASS  ${name}</pre>`;
+        } catch (e) {
+          failed++;
+          out.innerHTML += `<pre class="fail">  FAIL  ${name}\n        ${e.message}</pre>`;
+        }
+      },
+      /** @param {*} actual @param {*} expected @param {string} [msg] */
+      eq(actual, expected, msg) {
+        if (actual !== expected) {
+          throw new Error(`${msg || 'Assertion failed'}: expected ${JSON.stringify(expected)}, got ${JSON.stringify(actual)}`);
+        }
+      },
+      /** @param {boolean} cond @param {string} [msg] */
+      ok(cond, msg) {
+        if (!cond) throw new Error(msg || 'Expected truthy');
+      },
+      /** @param {number} a @param {number} b @param {number} [eps] @param {string} [msg] */
+      near(a, b, eps = 0.001, msg) {
+        if (Math.abs(a - b) > eps) {
+          throw new Error(`${msg || 'Near failed'}: |${a} - ${b}| > ${eps}`);
+        }
+      },
+      /** @param {string} suite */
+      suite(suite) {
+        out.innerHTML += `<h2>${suite}</h2>`;
+      },
+    };
+
+    // Load test suites
+    const suites = [
+      './integration/bac.test.js',
+      './integration/params.test.js',
+      './integration/format.test.js',
+      './integration/validate.test.js',
+      './integration/store.test.js',
+    ];
+
+    for (const s of suites) {
+      try {
+        await import(s);
+      } catch (e) {
+        out.innerHTML += `<pre class="fail">  ERROR loading ${s}: ${e.message}</pre>`;
+      }
+    }
+
+    // Summary
+    out.innerHTML += `<h2>Summary</h2>`;
+    out.innerHTML += `<pre class="${failed ? 'fail' : 'pass'}">${passed}/${total} passed, ${failed} failed</pre>`;
+    document.title = failed ? `FAIL (${failed})` : `PASS (${passed})`;
+  </script>
+</body>
+</html>

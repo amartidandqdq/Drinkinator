@@ -5,8 +5,7 @@
 /** @typedef {import('../types.js').Drink} Drink */
 /** @typedef {import('../types.js').BACParams} BACParams */
 
-/** Alcohol density in g/mL */
-const ALCOHOL_DENSITY = 0.8;
+import { ALCOHOL_DENSITY, MS_PER_HOUR } from '../constants.js';
 
 /**
  * Compute peak BAC contribution of a single drink.
@@ -30,7 +29,7 @@ export function drinkBAC(drink, params) {
 export function computeBAC(drinks, now, params) {
   let bac = 0;
   for (const d of drinks) {
-    const hoursElapsed = (now - d.time) / 3_600_000;
+    const hoursElapsed = (now - d.time) / MS_PER_HOUR;
     if (hoursElapsed < 0) continue;
     const peak = drinkBAC(d, params);
     const remaining = peak - params.elimRate * hoursElapsed;

@@ -37,4 +37,15 @@
  * @property {number} limit - Legal BAC limit in g/L
  */
 
+/**
+ * @typedef {Object} LogEntry
+ * @property {string} timestamp - ISO 8601
+ * @property {string} traceId - Session-unique UUID for correlation
+ * @property {"error"|"warn"|"info"|"debug"} level
+ * @property {string} source - Module tag (e.g. 'bac', 'ui', 'profile')
+ * @property {string} message
+ * @property {*} payload - Serialized input data, or null
+ * @property {string|null} stack - Error.stack, or null
+ */
+
 export {};
