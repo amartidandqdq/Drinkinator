@@ -20,7 +20,7 @@ export function createTimeModal(overlay, onConfirm) {
   const nameEl = /** @type {HTMLElement} */ (overlay.querySelector('#modal-drink-name'));
   const infoEl = /** @type {HTMLElement} */ (overlay.querySelector('#modal-drink-info'));
   const timeInput = /** @type {HTMLInputElement} */ (overlay.querySelector('#modal-time'));
-  const tabs = overlay.querySelectorAll('.time-mode-tab');
+  const tabs = /** @type {NodeListOf<HTMLElement>} */ (overlay.querySelectorAll('.time-mode-tab'));
   const modeContents = {
     now: overlay.querySelector('#mode-now'),
     clock: overlay.querySelector('#mode-clock'),
@@ -31,11 +31,9 @@ export function createTimeModal(overlay, onConfirm) {
   let pending = null;
 
   /** @param {'now'|'clock'|'ago'} mode */
-  const MODE_KEYS = ['now', 'clock', 'ago'];
-
   function setMode(mode) {
-    tabs.forEach((t, i) => {
-      t.classList.toggle('active', MODE_KEYS[i] === mode);
+    tabs.forEach((t) => {
+      t.classList.toggle('active', t.dataset.mode === mode);
     });
     Object.entries(modeContents).forEach(([k, el]) => {
       el.classList.toggle('active', k === mode);
@@ -86,8 +84,8 @@ export function createTimeModal(overlay, onConfirm) {
   });
 
   // Tab switching
-  tabs.forEach((t, i) => {
-    t.addEventListener('click', () => setMode(MODE_KEYS[i]));
+  tabs.forEach((t) => {
+    t.addEventListener('click', () => setMode(/** @type {'now'|'clock'|'ago'} */ (t.dataset.mode)));
   });
 
   return {

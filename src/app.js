@@ -2,7 +2,7 @@
 import { COUNTRIES, PRESETS } from './data/index.js';
 import { computeBAC, drinkBAC, findTimeTo, fmtTime, fmtDuration, log, validateBACParams } from './core/index.js';
 import { createDrinkStore, readProfile, toleranceLabel } from './state/index.js';
-import { renderStatus, renderDrinkList, createTimeModal } from './ui/index.js';
+import { renderStatus, renderDrinkList, createTimeModal, initTheme } from './ui/index.js';
 import { BAC_TRACE_THRESHOLD, UPDATE_INTERVAL_MS } from './constants.js';
 
 // === DOM refs ===
@@ -140,6 +140,13 @@ countrySel.addEventListener('change', () => {
   $(id).addEventListener('input', update));
 document.querySelectorAll('input[name="sex"]').forEach(r =>
   r.addEventListener('change', update));
+
+// === Theme ===
+try {
+  initTheme($('theme-toggle'));
+} catch (err) {
+  log.error('theme', 'initTheme failed', err);
+}
 
 // === Boot ===
 update();

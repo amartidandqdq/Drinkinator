@@ -4,9 +4,25 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Drinkinator - Calculateur d'alcool</title>
+<script>
+  // Set theme BEFORE CSS loads to avoid FOUC.
+  // Key mirrors THEME_STORAGE_KEY in src/constants.js — keep in sync.
+  (function () {
+    try {
+      var saved = localStorage.getItem('drinkinator-theme');
+      var theme = saved || (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+      document.documentElement.setAttribute('data-theme', theme);
+    } catch (e) {}
+  })();
+</script>
 <link rel="stylesheet" href="styles/main.css">
 </head>
 <body>
+
+<button class="theme-toggle" id="theme-toggle" aria-label="Changer de th&egrave;me" title="Changer de th&egrave;me" aria-pressed="false">
+  <span class="icon-dark" aria-hidden="true">&#9788;</span>
+  <span class="icon-light" aria-hidden="true">&#9790;</span>
+</button>
 
 <h1>Drinkinator</h1>
 <p class="subtitle">Estimateur de taux d'alcool</p>
@@ -96,9 +112,9 @@
     <h3 id="modal-drink-name">Ajouter</h3>
     <p id="modal-drink-info" style="text-align:center;color:var(--muted);font-size:0.85rem;margin:-8px 0 12px;"></p>
     <div class="time-mode-tabs">
-      <button class="time-mode-tab active">Maintenant</button>
-      <button class="time-mode-tab">Heure pr&eacute;cise</button>
-      <button class="time-mode-tab">Il y a...</button>
+      <button class="time-mode-tab active" data-mode="now">Maintenant</button>
+      <button class="time-mode-tab" data-mode="clock">Heure pr&eacute;cise</button>
+      <button class="time-mode-tab" data-mode="ago">Il y a...</button>
     </div>
 
     <div class="time-mode-content active" id="mode-now">

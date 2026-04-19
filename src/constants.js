@@ -59,3 +59,11 @@ export const SEARCH_ITERATIONS = 50;
 export const TIMELINE_DANGER_SCALE = 3;
 /** Minimum divisor safeguard for timeline percentage */
 export const TIMELINE_MIN_LIMIT = 0.01;
+
+// --- Theme ---
+
+/** localStorage key for user theme preference. Mirrored in index.html inline script — keep in sync. */
+export const THEME_STORAGE_KEY = 'drinkinator-theme';
+/** Supported theme values */
+export const THEME_DARK = 'dark';
+export const THEME_LIGHT = 'light';
