@@ -72,6 +72,7 @@ src/
     status.js           renderStatus()
     drink-list.js       renderDrinkList()
     modal.js            createTimeModal()
+    theme.js            initTheme() — toggle clair/sombre + suivi systeme
     index.js            Barrel
   app.js                Orchestrateur, event listeners, error boundaries
 ```
@@ -132,3 +133,10 @@ Retour : `{ valid: boolean, reason?: string }`. Pas d'exception lancee.
 6. Si nouveau type -> `types.js`.
 7. Wrapper tout call site dans `app.js` avec `try/catch` + `log.error(...)`.
 8. Ajouter un test dans `tests/integration/`.
+
+## Theming (clair / sombre)
+
+- Variables CSS sur `:root` (sombre par defaut) + overrides sous `[data-theme="light"]` dans `styles/main.css`.
+- `<script>` inline dans `<head>` applique `data-theme` avant le chargement du CSS (anti-FOUC). La cle `drinkinator-theme` y est dupliquee — mirroir de `THEME_STORAGE_KEY` dans `constants.js`, garder en sync.
+- `src/ui/theme.js#initTheme()` cable le bouton `#theme-toggle`, persiste le choix dans `localStorage`, suit `prefers-color-scheme` si aucune preference sauvee.
+- Toute nouvelle couleur doit etre declaree dans les DEUX blocs (sombre + clair). Pas de hex en dur dans les composants CSS.

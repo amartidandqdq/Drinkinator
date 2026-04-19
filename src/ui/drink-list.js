@@ -5,6 +5,11 @@
 /** @typedef {import('../types.js').Drink} Drink */
 /** @typedef {import('../types.js').BACParams} BACParams */
 
+const HTML_ESCAPES = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+
+/** @param {string} s */
+const escapeHtml = (s) => String(s).replace(/[&<>"']/g, (c) => HTML_ESCAPES[c]);
+
 /**
  * Render the drink list into a container element.
  * @param {HTMLElement} listEl - Container for drink items
@@ -29,13 +34,14 @@ export function renderDrinkList(listEl, clearBtn, drinks, bacFn, params, onRemov
     const hh = String(d.time.getHours()).padStart(2, '0');
     const mm = String(d.time.getMinutes()).padStart(2, '0');
     const contrib = bacFn(d, params);
+    const safeName = escapeHtml(d.name);
     return `<div class="drink-item">
       <div class="info">
-        <strong>${d.name}</strong><br>
+        <strong>${safeName}</strong><br>
         <span>${d.vol} mL &bull; ${d.abv}% &bull; ${hh}:${mm}</span>
       </div>
       <div class="bac-contrib">+${contrib.toFixed(3)}</div>
-      <button class="remove" data-idx="${i}">&times;</button>
+      <button class="remove" data-idx="${i}" aria-label="Supprimer ${safeName}">&times;</button>
     </div>`;
   }).join('');
 
