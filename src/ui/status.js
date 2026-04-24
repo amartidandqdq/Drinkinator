@@ -4,6 +4,9 @@
 
 import { BAC_TRACE_THRESHOLD, BLOOD_TO_BREATH_RATIO, TIMELINE_DANGER_SCALE, TIMELINE_MIN_LIMIT } from '../constants.js';
 
+/** French number format: 2 decimals, comma separator. @param {number} n */
+const fmtFr = (n) => n.toFixed(2).replace('.', ',');
+
 /**
  * @typedef {Object} StatusElements
  * @property {HTMLElement} panel - Status card container
@@ -37,8 +40,8 @@ import { BAC_TRACE_THRESHOLD, BLOOD_TO_BREATH_RATIO, TIMELINE_DANGER_SCALE, TIME
 export function renderStatus(els, data) {
   const { bac, limit, drinkCount, driveTimeStr, soberTimeStr } = data;
 
-  els.bacBlood.textContent = bac.toFixed(2) + ' g/L';
-  els.bacBreath.textContent = (bac * BLOOD_TO_BREATH_RATIO).toFixed(2) + ' mg/L';
+  els.bacBlood.textContent = fmtFr(bac) + ' g/L';
+  els.bacBreath.textContent = fmtFr(bac * BLOOD_TO_BREATH_RATIO) + ' mg/L';
   els.panel.classList.remove('ok', 'warn', 'danger');
 
   if (bac <= BAC_TRACE_THRESHOLD && drinkCount === 0) {
@@ -82,5 +85,5 @@ export function renderStatus(els, data) {
   }
   const breath = bac * BLOOD_TO_BREATH_RATIO;
   const breathLimit = limit * BLOOD_TO_BREATH_RATIO;
-  els.timelineLabel.textContent = `${bac.toFixed(2)}/${limit.toFixed(2)} g/L \u2022 ${breath.toFixed(2)}/${breathLimit.toFixed(2)} mg/L`;
+  els.timelineLabel.textContent = `${fmtFr(bac)}/${fmtFr(limit)} g/L \u2022 ${fmtFr(breath)}/${fmtFr(breathLimit)} mg/L`;
 }

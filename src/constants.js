@@ -67,3 +67,14 @@ export const THEME_STORAGE_KEY = 'drinkinator-theme';
 /** Supported theme values */
 export const THEME_DARK = 'dark';
 export const THEME_LIGHT = 'light';
+
+// --- Tolerance labels ---
+
+/** Human labels for tolerance slider (0..1), ordered from lowest to highest. */
+export const TOLERANCE_LABELS = Object.freeze([
+  'Très faible',
+  'Faible',
+  'Moyenne',
+  'Élevée',
+  'Très élevée',
+]);

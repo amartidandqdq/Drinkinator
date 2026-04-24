@@ -59,9 +59,10 @@ export function createTimeModal(overlay, onConfirm) {
     const val = timeInput.value;
     if (!val) return;
     const [h, m] = val.split(':').map(Number);
-    const t = new Date();
+    const now = new Date();
+    const t = new Date(now);
     t.setHours(h, m, 0, 0);
-    if (t > new Date()) t.setDate(t.getDate() - 1);
+    if (t > now) t.setDate(t.getDate() - 1);
     confirm(t);
   });
 

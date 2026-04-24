@@ -40,7 +40,7 @@ run('computeBAC — drink 2 hours ago is partially eliminated', () => {
   const drink = { name: 'Beer', vol: 500, abv: 5, time: twoHoursAgo };
   const params = { weight: 80, sexFactor: 0.7, elimRate: 0.12, limit: 0.5 };
   const bac = computeBAC([drink], now, params);
-  // 0.357 - 0.12 * 2 = 0.357 - 0.24 ≈ 0.117
+  // 0.357 - 0.12 * 2 = 0.117 (single drink: new and old models agree)
   near(bac, 0.117, 0.01, 'BAC after 2h');
 });
 
@@ -50,4 +50,31 @@ run('computeBAC — fully eliminated drink returns 0', () => {
   const drink = { name: 'Beer', vol: 500, abv: 5, time: longAgo };
   const params = { weight: 80, sexFactor: 0.7, elimRate: 0.12, limit: 0.5 };
   eq(computeBAC([drink], now, params), 0, 'fully eliminated');
+});
+
+run('computeBAC — 4 simultaneous drinks eliminate at absolute rate', () => {
+  // Regression lock: old per-drink model gave N*elimRate decay.
+  // New Widmark model: total BAC decays at elimRate (absolute g/L/h).
+  const now = new Date();
+  const t0 = new Date(now.getTime() - 2.5 * 3_600_000);
+  // vol=420, abv=5, sexFactor=0.7, weight=80 -> peak = 420*0.05*0.8/56 = 0.3
+  const mk = () => ({ name: 'X', vol: 420, abv: 5, time: t0 });
+  const drinks = [mk(), mk(), mk(), mk()];
+  const params = { weight: 80, sexFactor: 0.7, elimRate: 0.15, limit: 0.5 };
+  const bac = computeBAC(drinks, now, params);
+  // 4 * 0.3 - 0.15 * 2.5 = 1.2 - 0.375 = 0.825
+  near(bac, 0.825, 0.001, 'BAC 4 simultaneous at t=2.5h');
+});
+
+run('computeBAC — drinks out of order are processed chronologically', () => {
+  const now = new Date();
+  const t2 = new Date(now.getTime() - 2 * 3_600_000);
+  const t1 = new Date(now.getTime() - 3 * 3_600_000);
+  const d1 = { name: 'Beer', vol: 500, abv: 5, time: t1 };
+  const d2 = { name: 'Beer', vol: 500, abv: 5, time: t2 };
+  const params = { weight: 80, sexFactor: 0.7, elimRate: 0.12, limit: 0.5 };
+  // peak=0.357 each. After t1: bac=0.357. Between t1 and t2 (1h): 0.357-0.12=0.237.
+  // Add peak at t2: 0.237+0.357=0.594. From t2 to now (2h): 0.594-0.24=0.354.
+  const bac = computeBAC([d2, d1], now, params);
+  near(bac, 0.354, 0.01, 'BAC chronological ordering');
 });

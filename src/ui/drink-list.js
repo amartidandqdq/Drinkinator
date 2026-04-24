@@ -25,8 +25,7 @@ export function renderDrinkList(listEl, clearBtn, drinks, bacFn, params, onRemov
 
   if (!drinks.length) {
     listEl.innerHTML =
-      '<p style="text-align:center;color:var(--muted);font-size:0.85rem;padding:12px 0;">' +
-      'Aucune consommation. Appuyez sur un preset ci-dessus !</p>';
+      '<p class="drink-list-empty">Aucun drink. Appuyez sur un preset ci-dessus !</p>';
     return;
   }
 
@@ -45,7 +44,7 @@ export function renderDrinkList(listEl, clearBtn, drinks, bacFn, params, onRemov
     </div>`;
   }).join('');
 
-  // Bind remove buttons via delegation
+  // Bind remove buttons
   listEl.querySelectorAll('.remove').forEach(btn => {
     btn.addEventListener('click', () => onRemove(Number(btn.dataset.idx)));
   });

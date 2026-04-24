@@ -1,5 +1,5 @@
 # CLAUDE.md — OS du Projet Drinkinator
-> Derniere mise a jour : 2026-04-08
+> Derniere mise a jour : 2026-04-24
 
 Application browser pure (ES modules). Pas de Node.js, pas de bundler, pas de build step.
 Ouvrir `index.html` directement ou via un serveur statique.
@@ -73,6 +73,9 @@ src/
     drink-list.js       renderDrinkList()
     modal.js            createTimeModal()
     theme.js            initTheme() — toggle clair/sombre + suivi systeme
+    presets.js          renderPresets() — rendu + wiring boutons preset
+    custom-drink.js     wireCustomDrink() — formulaire drink custom
+    country-select.js   initCountrySelect() — populate + change handler
     index.js            Barrel
   app.js                Orchestrateur, event listeners, error boundaries
 ```
@@ -133,6 +136,12 @@ Retour : `{ valid: boolean, reason?: string }`. Pas d'exception lancee.
 6. Si nouveau type -> `types.js`.
 7. Wrapper tout call site dans `app.js` avec `try/catch` + `log.error(...)`.
 8. Ajouter un test dans `tests/integration/`.
+
+## Workflow Git & Deploiement
+
+- **Push direct sur `main` interdit** — toujours passer par une branche feature + PR (`gh pr create`), puis merge via `gh pr merge <n> --merge --delete-branch`.
+- GitHub Pages sert depuis `main` / racine : https://amartidandqdq.github.io/Drinkinator/ — rebuild automatique declenche au merge dans `main` (~30s).
+- Tests integration : ouvrir `tests/test-runner.html` dans un navigateur (pas de `npm test`).
 
 ## Theming (clair / sombre)
 
