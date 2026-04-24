@@ -27,6 +27,7 @@ export function createDrinkStore(onChange) {
       onChange();
     },
     remove(index) {
+      if (!Number.isInteger(index) || index < 0 || index >= drinks.length) return;
       drinks.splice(index, 1);
       onChange();
     },

@@ -1,11 +1,16 @@
 /** @file Entry point — wires all dependencies and boots the app. */
 import { COUNTRIES, PRESETS } from './data/index.js';
-import { computeBAC, drinkBAC, findTimeTo, fmtTime, fmtDuration, log, validateBACParams } from './core/index.js';
+import {
+  computeBAC, drinkBAC, findTimeTo, fmtTime, fmtDuration,
+  log, validateBACParams, validateDrink,
+} from './core/index.js';
 import { createDrinkStore, readProfile, toleranceLabel } from './state/index.js';
-import { renderStatus, renderDrinkList, createTimeModal, initTheme } from './ui/index.js';
+import {
+  renderStatus, renderDrinkList, createTimeModal, initTheme,
+  renderPresets, wireCustomDrink, initCountrySelect,
+} from './ui/index.js';
 import { BAC_TRACE_THRESHOLD, UPDATE_INTERVAL_MS } from './constants.js';
 
-// === DOM refs ===
 const $ = (/** @type {string} */ id) => document.getElementById(id);
 
 const profileDOM = {
@@ -34,12 +39,14 @@ const drinkListEl = $('drink-list');
 const clearBtn = $('clear-btn');
 const toleranceLabelEl = $('tolerance-label');
 
-// === Compute + render cycle ===
 function update() {
   let params, drinks, now, bac;
-  // Block 1 — read profile + state
   try {
     params = readProfile(profileDOM, COUNTRIES);
+    if (params === null) {
+      log.warn('profile', 'readProfile returned null (invalid country index)');
+      return;
+    }
     const check = validateBACParams(params);
     if (!check.valid) {
       log.warn('profile', `Invalid BACParams: ${check.reason}`);
@@ -53,7 +60,6 @@ function update() {
     return;
   }
 
-  // Block 2 — BAC computation
   let driveTimeStr = null, soberTimeStr = null;
   try {
     bac = computeBAC(drinks, now, params);
@@ -70,7 +76,6 @@ function update() {
     return;
   }
 
-  // Block 3 — render UI
   try {
     renderStatus(statusEls, { bac, limit: params.limit, drinkCount: drinks.length, driveTimeStr, soberTimeStr });
     renderDrinkList(drinkListEl, clearBtn, drinks, drinkBAC, params, (i) => store.remove(i));
@@ -79,11 +84,14 @@ function update() {
   }
 }
 
-// === Store ===
 const store = createDrinkStore(update);
 
-// === Modal ===
 const modal = createTimeModal($('time-modal'), (name, vol, abv, time) => {
+  const check = validateDrink({ name, vol, abv, time });
+  if (!check.valid) {
+    log.warn('store', `Invalid drink rejected: ${check.reason}`);
+    return;
+  }
   try {
     store.add(name, vol, abv, time);
   } catch (err) {
@@ -91,64 +99,42 @@ const modal = createTimeModal($('time-modal'), (name, vol, abv, time) => {
   }
 });
 
-// === Presets ===
-const presetsEl = $('presets');
-for (const p of PRESETS) {
-  const btn = document.createElement('button');
-  btn.className = 'preset-btn';
-  btn.textContent = `${p.icon} ${p.name}`;
-  btn.title = `${p.vol} mL / ${p.abv}%`;
-  btn.addEventListener('click', () => {
-    try { modal.open(p.name, p.vol, p.abv); }
-    catch (err) { log.error('app', 'Preset click failed', err, { preset: p.name }); }
-  });
-  presetsEl.appendChild(btn);
+try {
+  renderPresets($('presets'), PRESETS, (name, vol, abv) => modal.open(name, vol, abv));
+} catch (err) {
+  log.error('app', 'renderPresets failed', err);
 }
 
-// === Custom drink ===
-$('custom-add-btn').addEventListener('click', () => {
-  try {
-    const vol = parseFloat(/** @type {HTMLInputElement} */ ($('custom-vol')).value);
-    const abv = parseFloat(/** @type {HTMLInputElement} */ ($('custom-abv')).value);
-    if (!vol || !abv) return;
-    modal.open(`Custom (${vol}mL, ${abv}%)`, vol, abv);
-  } catch (err) {
-    log.error('app', 'Custom drink failed', err);
-  }
-});
+try {
+  wireCustomDrink(
+    /** @type {HTMLButtonElement} */ ($('custom-add-btn')),
+    /** @type {HTMLInputElement} */ ($('custom-vol')),
+    /** @type {HTMLInputElement} */ ($('custom-abv')),
+    (name, vol, abv) => modal.open(name, vol, abv),
+  );
+} catch (err) {
+  log.error('app', 'wireCustomDrink failed', err);
+}
 
-// === Clear all ===
 clearBtn.addEventListener('click', () => store.clear());
 
-// === Country dropdown ===
-const countrySel = profileDOM.country;
-COUNTRIES.forEach((c, i) => {
-  const opt = document.createElement('option');
-  opt.value = String(i);
-  opt.textContent = `${c.flag} ${c.name} (${c.limit} g/L)`;
-  countrySel.appendChild(opt);
-});
+try {
+  initCountrySelect(profileDOM.country, $('custom-limit-row'), COUNTRIES, update);
+} catch (err) {
+  log.error('app', 'initCountrySelect failed', err);
+}
 
-countrySel.addEventListener('change', () => {
-  const c = COUNTRIES[countrySel.value];
-  $('custom-limit-row').style.display = c.code === 'OTHER' ? '' : 'none';
-  update();
-});
-
-// === Profile listeners ===
 ['weight', 'tolerance', 'custom-limit'].forEach(id =>
   $(id).addEventListener('input', update));
 document.querySelectorAll('input[name="sex"]').forEach(r =>
   r.addEventListener('change', update));
 
-// === Theme ===
 try {
   initTheme($('theme-toggle'));
 } catch (err) {
   log.error('theme', 'initTheme failed', err);
 }
 
-// === Boot ===
 update();
 setInterval(update, UPDATE_INTERVAL_MS);
 log.info('app', 'Drinkinator booted');

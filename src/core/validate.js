@@ -14,8 +14,8 @@
 export function validateDrink(d) {
   if (!d || typeof d !== 'object') return { valid: false, reason: 'not an object' };
   if (typeof d.name !== 'string' || !d.name) return { valid: false, reason: 'missing name' };
-  if (typeof d.vol !== 'number' || d.vol <= 0) return { valid: false, reason: 'vol must be > 0' };
-  if (typeof d.abv !== 'number' || d.abv < 0 || d.abv > 100) return { valid: false, reason: 'abv must be 0-100' };
+  if (!Number.isFinite(d.vol) || d.vol <= 0) return { valid: false, reason: 'vol must be > 0' };
+  if (!Number.isFinite(d.abv) || d.abv < 0 || d.abv > 100) return { valid: false, reason: 'abv must be 0-100' };
   if (!(d.time instanceof Date) || isNaN(d.time)) return { valid: false, reason: 'invalid time' };
   return { valid: true };
 }
@@ -27,9 +27,9 @@ export function validateDrink(d) {
  */
 export function validateBACParams(p) {
   if (!p || typeof p !== 'object') return { valid: false, reason: 'not an object' };
-  if (typeof p.weight !== 'number' || p.weight <= 0) return { valid: false, reason: 'weight must be > 0' };
-  if (typeof p.sexFactor !== 'number' || p.sexFactor <= 0) return { valid: false, reason: 'invalid sexFactor' };
-  if (typeof p.elimRate !== 'number' || p.elimRate <= 0) return { valid: false, reason: 'invalid elimRate' };
-  if (typeof p.limit !== 'number' || p.limit < 0) return { valid: false, reason: 'invalid limit' };
+  if (!Number.isFinite(p.weight) || p.weight <= 0) return { valid: false, reason: 'weight must be > 0' };
+  if (!Number.isFinite(p.sexFactor) || p.sexFactor <= 0) return { valid: false, reason: 'invalid sexFactor' };
+  if (!Number.isFinite(p.elimRate) || p.elimRate <= 0) return { valid: false, reason: 'invalid elimRate' };
+  if (!Number.isFinite(p.limit) || p.limit < 0) return { valid: false, reason: 'invalid limit' };
   return { valid: true };
 }

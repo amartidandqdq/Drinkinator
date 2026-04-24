@@ -43,3 +43,23 @@ run('validateBACParams — missing elimRate fails', () => {
   const p = { weight: 80, sexFactor: 0.7, limit: 0.5 };
   eq(validateBACParams(p).valid, false, 'no elimRate');
 });
+
+run('validateDrink — NaN vol fails', () => {
+  const d = { name: 'X', vol: NaN, abv: 5, time: new Date() };
+  eq(validateDrink(d).valid, false, 'vol NaN');
+});
+
+run('validateDrink — NaN abv fails', () => {
+  const d = { name: 'X', vol: 100, abv: NaN, time: new Date() };
+  eq(validateDrink(d).valid, false, 'abv NaN');
+});
+
+run('validateBACParams — NaN weight fails', () => {
+  const p = { weight: NaN, sexFactor: 0.7, elimRate: 0.12, limit: 0.5 };
+  eq(validateBACParams(p).valid, false, 'weight NaN');
+});
+
+run('validateBACParams — NaN limit fails', () => {
+  const p = { weight: 80, sexFactor: 0.7, elimRate: 0.12, limit: NaN };
+  eq(validateBACParams(p).valid, false, 'limit NaN');
+});
