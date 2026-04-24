@@ -110,7 +110,16 @@
   <div class="modal">
     <button class="close-modal">&times;</button>
     <h3 id="modal-drink-name">Ajouter</h3>
-    <p id="modal-drink-info" style="text-align:center;color:var(--muted);font-size:0.85rem;margin:-8px 0 12px;"></p>
+    <div class="row">
+      <div class="field">
+        <label>Volume (mL)</label>
+        <input type="number" id="modal-vol" min="10" max="2000" step="10">
+      </div>
+      <div class="field">
+        <label>Degr&eacute; (%)</label>
+        <input type="number" id="modal-abv" min="0.1" max="80" step="0.1">
+      </div>
+    </div>
     <div class="time-mode-tabs">
       <button class="time-mode-tab active" data-mode="now">Maintenant</button>
       <button class="time-mode-tab" data-mode="clock">Heure pr&eacute;cise</button>
