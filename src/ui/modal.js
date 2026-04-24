@@ -18,7 +18,8 @@ import { MS_PER_MINUTE } from '../constants.js';
  */
 export function createTimeModal(overlay, onConfirm) {
   const nameEl = /** @type {HTMLElement} */ (overlay.querySelector('#modal-drink-name'));
-  const infoEl = /** @type {HTMLElement} */ (overlay.querySelector('#modal-drink-info'));
+  const volInput = /** @type {HTMLInputElement} */ (overlay.querySelector('#modal-vol'));
+  const abvInput = /** @type {HTMLInputElement} */ (overlay.querySelector('#modal-abv'));
   const timeInput = /** @type {HTMLInputElement} */ (overlay.querySelector('#modal-time'));
   const tabs = /** @type {NodeListOf<HTMLElement>} */ (overlay.querySelectorAll('.time-mode-tab'));
   const modeContents = {
@@ -27,7 +28,7 @@ export function createTimeModal(overlay, onConfirm) {
     ago: overlay.querySelector('#mode-ago'),
   };
 
-  /** @type {{ name: string, vol: number, abv: number } | null} */
+  /** @type {{ name: string } | null} */
   let pending = null;
 
   /** @param {'now'|'clock'|'ago'} mode */
@@ -43,7 +44,10 @@ export function createTimeModal(overlay, onConfirm) {
   /** @param {Date} time */
   function confirm(time) {
     if (!pending) return;
-    onConfirm(pending.name, pending.vol, pending.abv, time);
+    const vol = parseFloat(volInput.value);
+    const abv = parseFloat(abvInput.value);
+    if (!vol || vol <= 0 || !Number.isFinite(abv) || abv < 0) return;
+    onConfirm(pending.name, vol, abv, time);
     close();
   }
 
@@ -91,9 +95,10 @@ export function createTimeModal(overlay, onConfirm) {
 
   return {
     open(name, vol, abv) {
-      pending = { name, vol, abv };
+      pending = { name };
       nameEl.textContent = name;
-      infoEl.textContent = `${vol} mL \u2022 ${abv}% ABV`;
+      volInput.value = String(vol);
+      abvInput.value = String(abv);
       const now = new Date();
       timeInput.value = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
       setMode('now');
