@@ -71,7 +71,7 @@ src/
   ui/
     status.js           renderStatus()
     drink-list.js       renderDrinkList()
-    modal.js            createTimeModal()
+    modal.js            createTimeModal() — vol/abv pre-remplis editables (pas lockes)
     theme.js            initTheme() — toggle clair/sombre + suivi systeme
     presets.js          renderPresets() — rendu + wiring boutons preset
     custom-drink.js     wireCustomDrink() — formulaire drink custom
